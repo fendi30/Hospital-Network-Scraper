@@ -8,11 +8,67 @@ Modify these settings to customize the scraper's behavior and security features.
 # TARGET CONFIGURATION
 # ============================================================================
 
-# URL to scrape
-TARGET_URL = "https://www.uwmedicine.org/search/locations"
+# URLs to scrape - you can add multiple URLs here
+TARGET_URLS = [
+    "https://www.multicare.org/find-a-location/?page_num=7",
+    # Add more URLs below:
+    # "https://www.example.com/locations",
+    # "https://www.another-site.com/find-us",
+]
 
 # Output filename for CSV
-OUTPUT_FILENAME = "uw_medicine_locations.csv"
+OUTPUT_FILENAME = "medicine_locations.csv"
+
+
+# ============================================================================
+# PAGINATION CONFIGURATION
+# ============================================================================
+
+# Enable automatic pagination detection and handling
+ENABLE_PAGINATION = True
+
+# Maximum number of pages to scrape per URL (safety limit)
+MAX_PAGES_PER_URL = 1
+
+# Common pagination selectors (will try each until one works)
+PAGINATION_SELECTORS = {
+    # "Next" button selectors
+    'next_button': [
+        ".right_button ",
+        "a.next.page-numbers",
+        ".next.page-numbers",
+        ".next-button",
+        ".pagination-next",
+        "a.next-button",
+        "a:contains('Next')",
+        "button:contains('Next')",
+        "[aria-label*='Next']",
+        ".next",
+        "a[rel='next']",
+        ".arrow-right",
+        "[class*='next']"
+    ],
+    
+    # "Load More" button selectors
+    'load_more_button': [
+        "button:contains('Load More')",
+        "a:contains('Load More')",
+        "button:contains('Show More')",
+        "[class*='load-more']",
+        "[class*='show-more']"
+    ],
+    
+    # Page number links (for sites with numbered pagination)
+    'page_numbers': [
+        ".pagination a",
+        "[class*='pagination'] a",
+        "[class*='page-link']"
+    ]
+}
+
+# Delay between page navigations (seconds)
+PAGINATION_DELAY_MIN = 1.0
+PAGINATION_DELAY_MAX = 3.0
 
 
 # ============================================================================
@@ -26,7 +82,7 @@ HEADLESS_MODE = False
 DISABLE_IMAGES = False
 
 # Maximum time to wait for page elements (seconds)
-PAGE_LOAD_TIMEOUT = 10
+PAGE_LOAD_TIMEOUT = 8
 
 
 # ============================================================================
@@ -66,8 +122,8 @@ WINDOW_HEIGHT = 1080
 # ============================================================================
 
 # Random delay range after page load (seconds)
-INITIAL_DELAY_MIN = 2.0
-INITIAL_DELAY_MAX = 4.0
+INITIAL_DELAY_MIN = 1.0
+INITIAL_DELAY_MAX = 3.0
 
 # Random delay range between scrolls (seconds)
 SCROLL_DELAY_MIN = 0.1
@@ -104,6 +160,17 @@ PROXY_SERVER = None
 
 # Main location container selectors (will try each until one works)
 LOCATION_CONTAINER_SELECTORS = [
+    ".LocationInfoWrap",
+    ".columns-11",
+    ".flex-top",
+    ".cta-listing.locations",
+    ".h-auto",
+    ".ph-evm-finder-result",
+    ".provider-locations > div",
+    ".location_cards",
+    ".location-list",
+    ".location-list-card",
+    ".location-card-distance",
     ".location-item",
     ".location-card",
     "[data-location]",
@@ -114,6 +181,13 @@ LOCATION_CONTAINER_SELECTORS = [
 # Field selectors (will try each until one works)
 SELECTORS = {
     'facility_name': [
+        ".title-style-5",
+        "a[href*='astria']",
+        "a",
+        "h2 a",
+        ".location-list-card__name",
+        "h2.location-list-card__name",
+        ".location-card-distance > a",
         ".location-name",
         ".facility-name",
         "h2",
@@ -125,6 +199,12 @@ SELECTORS = {
     ],
     'address1': [
         # Try getting full address block first, then parse it
+        ".br",
+        ".location-list-card__address",
+        ".address",
+        ".location-list-card__address .address",
+        ".location-address",
+        ".location-card-distance > div:nth-of-type(1)",
         ".address",
         "[class*='address']",
         ".street-address",
@@ -138,6 +218,7 @@ SELECTORS = {
         "span:has(text)"  # Span containing text
     ],
     'address2': [
+        ".br",
         ".address-line-2",
         ".extended-address",
         ".address2",
@@ -145,6 +226,7 @@ SELECTORS = {
         "[class*='unit']"
     ],
     'city': [
+        ".location-card-distance > div:nth-of-type(2)",
         ".locality",
         "[itemprop='addressLocality']",
         ".city",
@@ -166,6 +248,7 @@ SELECTORS = {
         "[class*='zip']"
     ],
     'phone': [
+        ".location-card-distance a[href^='tel:']",
         ".phone",
         "[itemprop='telephone']",
         "a[href^='tel:']",
