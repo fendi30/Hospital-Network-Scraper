@@ -1,5 +1,5 @@
 """
-Configuration file for the UW Medicine scraper.
+Configuration file for the Medicine scraper.
 
 Modify these settings to customize the scraper's behavior and security features.
 """
@@ -256,4 +256,5 @@ SELECTORS = {
         "[class*='phone']",
         "[class*='telephone']"
     ]
+
 }
